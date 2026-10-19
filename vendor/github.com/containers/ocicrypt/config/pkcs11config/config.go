@@ -17,14 +17,13 @@
 package pkcs11config
 
 import (
+	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 
 	"github.com/containers/ocicrypt/crypto/pkcs11"
-	"github.com/pkg/errors"
-	"gopkg.in/yaml.v3"
+	"go.yaml.in/yaml/v3"
 )
 
 // OcicryptConfig represents the format of an imgcrypt.conf config file
@@ -39,11 +38,11 @@ const ENVVARNAME = "OCICRYPT_CONFIG"
 // not exist, so no error is returned.
 // A config file may look like this:
 // module-directories:
-//   - /usr/lib64/pkcs11/
-//   - /usr/lib/pkcs11/
+// - /usr/lib64/pkcs11/
+// - /usr/lib/pkcs11/
 // allowed-module-paths:
-//   - /usr/lib64/pkcs11/
-//   - /usr/lib/pkcs11/
+// - /usr/lib64/pkcs11/
+// - /usr/lib/pkcs11/
 func parseConfigFile(filename string) (*OcicryptConfig, error) {
 	// a non-existent config file is not an error
 	_, err := os.Stat(filename)
@@ -51,7 +50,7 @@ func parseConfigFile(filename string) (*OcicryptConfig, error) {
 		return nil, nil
 	}
 
-	data, err := ioutil.ReadFile(filename)
+	data, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +111,6 @@ func getDefaultCryptoConfigOpts() (*OcicryptConfig, error) {
 // GetUserPkcs11Config gets the user's Pkcs11Conig either from a configuration file or if none is
 // found the default ones are returned
 func GetUserPkcs11Config() (*pkcs11.Pkcs11Config, error) {
-	fmt.Print("Note: pkcs11 support is currently experimental\n")
 	ic, err := getConfiguration()
 	if err != nil {
 		return &pkcs11.Pkcs11Config{}, err
