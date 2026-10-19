@@ -3,7 +3,6 @@
 // license that can be found in the LICENSE file.
 
 //go:build aix || darwin || dragonfly || freebsd || linux || netbsd || openbsd || solaris || zos
-// +build aix darwin dragonfly freebsd linux netbsd openbsd solaris zos
 
 // Package unix contains an interface to the low-level operating system
 // primitives. OS details vary depending on the underlying system, and
@@ -77,11 +76,10 @@ func BytePtrToString(p *byte) string {
 	// Find NUL terminator.
 	n := 0
 	for ptr := unsafe.Pointer(p); *(*byte)(ptr) != 0; n++ {
-		ptr = unsafe.Pointer(uintptr(ptr) + 1)
+		ptr = unsafe.Add(ptr, 1)
 	}
 
-	s := unsafe.Slice((*byte)(unsafe.Pointer(p)), n)
-	return string(s)
+	return string(unsafe.Slice(p, n))
 }
 
 // Single-word zero for use when we need a valid pointer to 0 bytes.
